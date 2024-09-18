@@ -3,6 +3,8 @@ import {
   Dimensions,
   View,
   TouchableWithoutFeedback,
+  TouchableOpacity,
+  Text
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -23,7 +25,7 @@ export const AXIS_X = 'x';
 export const AXIS_Y = 'y';
 export const AXIS_ALL = 'all';
 
-const CONNECTOR_SIZE = 14;
+const CONNECTOR_SIZE = 20;
 const DEFAULT_Z_INDEX = 1;
 
 /**
@@ -205,7 +207,16 @@ export class DragResizeBlock extends Component {
       onPress(event);
     }
   }
-
+  onHashButtonPress = () => {
+    const screenWidth = Dimensions.get('window').width;
+    const screenHeight = Dimensions.get('window').height;
+    this.setState({
+      x: 10,
+      y: 10,
+      w: screenWidth - 40, // Her iki yandan 20 birim çıkarıyoruz
+      h: screenHeight - 70, // Her iki yandan 20 birim çıkarıyoruz
+    });
+  };
   /**
    * Handle resize start event.
    * @param {Array} coord - Press coordinate [x,y].
@@ -624,8 +635,7 @@ export class DragResizeBlock extends Component {
 
       return this.state;
     });
-  }
-
+  } 
   /**
    * Handle drag end event.
    * @param {Array} coord - Press coordinate [x,y].
@@ -705,9 +715,30 @@ export class DragResizeBlock extends Component {
           zIndex: isSelected ? zIndex + 1 : zIndex,
         }}
       >
-        <TouchableWithoutFeedback
-          onPress={this.onPress}
+        {/* Sağ üst köşeye sabitlenen buton */}
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            top: 16,
+            right: 40,
+            backgroundColor: 'black',
+            padding: 5,
+            borderRadius: 7,
+            zIndex: 2,
+          }}
+          onPress={this.onHashButtonPress}
         >
+          <Text
+            style={{
+              color: 'white',
+              fontWeight: 'bold',
+            }}
+          >
+           □ 
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableWithoutFeedback onPress={this.onPress}>
           <View
             style={{
               width: '100%',
@@ -719,7 +750,6 @@ export class DragResizeBlock extends Component {
         </TouchableWithoutFeedback>
 
         {isDisabled ? null : this.renderConnectors()}
-
       </View>
     );
   }
